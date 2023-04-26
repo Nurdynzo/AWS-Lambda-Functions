@@ -1,0 +1,51 @@
+import json
+import urllib.parse
+import boto3
+from botocore.config import Config
+
+my_config = Config(
+    region_name='eu-west-2',
+    retries={
+        'max_attempts': 10,
+        'mode': 'standard'
+    }
+)
+print('Loading function')
+s3 = boto3.resource('s3', config=my_config)
+properly_named_files = []
+wrongly_named_files = set()
+
+
+def get_bucket_url(bucket_name, file_name):
+    object_url_constructed = "https://ll-videos.ulesson.com"
+    return f'{object_url_constructed}/{file_name}'
+
+
+
+
+
+def lambda_handler(event, context):
+    # print("Received event: " + json.dumps(event, indent=2))
+    # Get the object from the event and show its content type
+    # bucket = event['Records'][0]['s3']['bucket']['name']
+    # key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+    try:
+        result = []
+        bucket_name = 'prod-live-lessons'
+        my_bucket = s3.Bucket(bucket_name)
+        for my_bucket_object in my_bucket.objects.all():
+              result.append({
+            "name": my_bucket_object.key,
+            "link": get_bucket_url(bucket_name, my_bucket_object.key)
+        })
+        # print(wrongly_named_files)
+        return {
+            "statusCode": 200,
+            'headers': {'Content-Type': 'application/json'},
+            "body": json.dumps(result)
+        }
+    except Exception as e:
+        print(e)
+        # print('Error getting object {} from bucket {}. Make sure they exist and your bucket is in the same region as '
+        #       'this function.'.format(key, bucket))
+        # raise e
