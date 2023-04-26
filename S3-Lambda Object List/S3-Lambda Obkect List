@@ -17,7 +17,7 @@ wrongly_named_files = set()
 
 
 def get_bucket_url(bucket_name, file_name):
-    object_url_constructed = "https://ll-videos.ulesson.com"
+    object_url_constructed = "https://example.com"
     return f'{object_url_constructed}/{file_name}'
 
 
@@ -31,7 +31,7 @@ def lambda_handler(event, context):
     # key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     try:
         result = []
-        bucket_name = 'prod-live-lessons'
+        bucket_name = 'bucket name'
         my_bucket = s3.Bucket(bucket_name)
         for my_bucket_object in my_bucket.objects.all():
               result.append({
